@@ -26,6 +26,12 @@ public class CoustomerDBAgent {
             db.open();
         }
     }
+    public void close(){
+        if(db != null){
+            db.close();
+            db = null;
+        }
+    }
     
     public boolean ifdbinit() {
         ResultSet res = db.qureyExec("select * from " +  tableName);
@@ -67,9 +73,33 @@ public class CoustomerDBAgent {
         }
     }
     
-    public List<NewCustomer> getData(){
+    public String changePassword(String inputemail, String inputpassword){
+        String sql = "UPDATE " + tableName + " SET  "
+                + "password='" + inputpassword + "' where email='"
+                + inputemail + "'";
+        try {
+            db.updateExec(sql);
+            return "OK";
+        } catch (SQLException sqlE) {
+            return sqlE.getMessage();
+        }
+    }
+    
+    public String deleteCustomer(String inputemail){
+        String sql = "DELETE FROM " + tableName + " where email='"
+                + inputemail + "'";
+        try {
+            db.updateExec(sql);
+            return "OK";
+        } catch (SQLException sqlE) {
+            return sqlE.getMessage();
+        }
+    }
+    
+    public MyList<NewCustomer> getData(){
         String sql  = "SELECT * from " + tableName ;
-        List<NewCustomer> reslist = new ArrayList();
+        NewCustomer[] storagespace = new NewCustomer[64];
+        MyList<NewCustomer> reslist = new MyList<NewCustomer>(storagespace,64);
         try {
             ResultSet results = db.qureyExec(sql);
             if (results == null) {
